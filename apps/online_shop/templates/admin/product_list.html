@@ -1,0 +1,269 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}My eCommerce{% endblock %}
+{% block content %}
+<div class="container pb-3">
+    <div class="row">
+        <div class="row d-flex justify-content-between pe-0">
+            <div class="col-5">
+                <form action="{% url 'product_search' %}" method="GET">
+                    {% csrf_token %}
+                    <div class="row mb-2">
+                        <div class="col-10 px-0">
+                            <input type="text" class="form-control" placeholder="search" name="keyword">
+                        </div>
+                        <div class="col-2">
+                            <button class="btn pt-1 px-0"><img src="{% static 'img/search-icon.png' %}" style="width: 30px; height: 30px;"></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="col-7 text-end pe-0">
+                <button type="button" class="btn btn-primary py-1" data-bs-toggle="modal" data-bs-target="#Modal_add" data-bs-whatever="@mdo">Add new product</button>
+            </div>
+            <!-- add new modal -->
+            <div class="modal fade" id="Modal_add" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Add new product</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form action="/products/add_new" method="POST" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    <label for="name" class="col-form-label">Name:</label>
+                                    <input type="text" class="form-control" id="name" name="name">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="description" class="col-form-label">Description:</label>
+                                    <textarea class="form-control" id="description" name="description"></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="categories" class="col-form-label">Categories:</label>
+                                    <select class="form-select" aria-label="Default select example" name="category">
+                                        {% for category in categories %}
+                                            <option value="{{category.id}}">{{category.name}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="new_category" class="col-form-label">Add new category:</label>
+                                    <input type="text" class="form-control" id="new_category" name="new_category">
+                                </div>
+                                <div class="mb-3 row">
+                                    <div class="col-3">
+                                        <label for="price" class="col-form-label">Price:</label>
+                                        <input type="number" class="form-control" id="price" name="price">
+                                    </div>
+                                    <div class="col-3">
+                                        <label for="stock" class="col-form-label">Inventory:</label>
+                                        <input type="number" class="form-control" id="stock" name="stock">
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="img" class="col-form-label">Main Image:</label>
+                                    <input type="file" class="form-control" id="img" name="img">
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    <button type="submit" class="btn btn-primary">Add</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-12">
+            <div class="row">
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">Picture</th>
+                            <th scope="col">ID</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Inventory Count</th>
+                            <th scope="col">Quantity Sold</th>
+                            <th scope="col">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="align-middle">
+                        {% for product in page_obj %}
+                        <tr>
+                            <td class="text-center">
+                                {% if product.main_image %}
+                                <img src="/media/{{product.main_image}}" alt="product_image" style="width: 50px; height: 50px;">
+                                {% endif %}
+                            </td>
+                            <td>{{product.id}}</td>
+                            <td>{{product.name}}</td>
+                            <td>{{product.stock}}</td>
+                            <td>{{product.sold}}</td>
+                            <td>
+                                <button type="button" class="btn btn-primary py-1" data-bs-toggle="modal" data-bs-target="#Modal{{product.id}}_update" data-bs-whatever="@mdo">edit</button>
+                            |   <button type="button" class="btn btn-warning py-1" data-bs-toggle="modal" data-bs-target="#Modal{{product.id}}_delete" data-bs-whatever="@mdo">delete</button>
+                            </td>
+                        </tr>
+                        <!-- edit modal -->
+                        <div class="modal fade" id="Modal{{product.id}}_update" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabel">Edit Product - ID {{product.id}}</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form action="/products/update/{{product.id}}" method="POST" enctype="multipart/form-data">
+                                            {% csrf_token %}
+                                            <div class="mb-3">
+                                                <label for="name" class="col-form-label">Name:</label>
+                                                <input type="text" class="form-control" id="name" value="{{product.name}}" name="name">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="description" class="col-form-label">Description:</label>
+                                                <textarea class="form-control" id="description" name="description">{{product.description}}</textarea>
+                                            </div>
+                                            <div class="mb-3">
+                                                <ul class="m-0 p-0">
+                                                    <span>Current Categories:</span>
+                                                    {% for category in product.categories.all %}
+                                                    <li class="ms-5">{{category.name}}
+                                                        <a href="{% url 'remove_category' product.id category.id %}"><span class="badge bg-secondary remove-btn">remove</span></a>
+                                                    </li>
+                                                    {% endfor %}
+                                                </ul>
+                                                <label for="categories" class="col-form-label">Categories:</label>
+                                                <select class="form-select" aria-label="Default select example" name="category">
+                                                    {% for category in categories %}
+                                                        <option value="{{category.id}}">{{category.name}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="new_category" class="col-form-label">or add new category:</label>
+                                                <input type="text" class="form-control" id="new_category" name="new_category">
+                                            </div>
+                                            <div class="mb-3 row">
+                                                <div class="col-3">
+                                                    <label for="price" class="col-form-label">Price:</label>
+                                                    <input type="number" class="form-control" id="price" value="{{product.price}}" name="price">
+                                                </div>
+                                                <div class="col-3">
+                                                    <label for="stock" class="col-form-label">Inventory:</label>
+                                                    <input type="number" class="form-control" id="stock" value="{{product.stock}}" name="stock">
+                                                </div>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="img" class="col-form-label">Sub Image:</label>
+                                                <input type="file" class="form-control" id="img" name="img">
+                                                <div class="d-flex justify-content-around mt-3">
+                                                    <div>
+                                                        {% if product.main_image == '' %}
+                                                        <strong>No Img</strong>
+                                                        {% else %}
+                                                        <img src="/media/{{product.main_image}}" alt="product_image" style="width: 50px; height: 50px;">
+                                                        {% endif %}
+                                                    </div>
+                                                    <div class="pt-2">
+                                                        <a href="{% url 'delete_image' pk=product.id place='main' %}"><img src="{% static 'img/trash-bin-icon.png' %}" style="width: 30px; height: 30px;" class="trash-bin" itemId={{item.id}}></a>
+                                                    </div>
+                                                    <div class="pt-3">
+                                                        <input type="checkbox" name="make_main" value="{{product.main_image}}" checked><span class="ms-2">Main</span>
+                                                    </div>
+                                                </div>
+                                                <hr>
+                                                {% for image in sub_images %}
+                                                <div class="d-flex justify-content-around mt-3">
+                                                    <div>
+                                                        <img src="/media/{{image.image}}" alt="product_image" style="width: 50px; height: 50px;">
+                                                    </div>
+                                                    <div class="pt-2">
+                                                        <a href="{% url 'delete_image' pk=image.id place='sub' %}"><img src="{% static 'img/trash-bin-icon.png' %}" style="width: 30px; height: 30px;" class="trash-bin" itemId={{item.id}}></a>
+                                                    </div>
+                                                    <div class="pt-3">
+                                                        <input type="checkbox" name="make_main" value="{{image.image}}"><span class="ms-2">Main</span>
+                                                    </div>
+                                                </div>
+                                                    {% if not forloop.last %}
+                                                    <hr>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                <button type="submit" class="btn btn-primary">Update</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- end of edit modal -->
+                        <!-- delete modal -->
+                        <div class="modal fade" id="Modal{{product.id}}_delete" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabel">Delete Product - ID {{product.id}}</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                            <div>
+                                                <label for="name" class="col-form-label">Name:</label>
+                                                <span>{{product.name}}</span>
+                                            </div>
+                                            <div>
+                                                <label for="description" class="col-form-label">Description:</label>
+                                                <span>{{product.description}}</span>
+                                            </div>
+                                            <div>
+                                                <label for="description" class="col-form-label">Category:</label>
+                                                {% for category in product.categories.all %}
+                                                    <span>{{category.name}}</span>
+                                                {% endfor %}
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                <a href="/products/delete/{{product.id}}"><button type="button" class="btn btn-warning">Delete</button></a>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- end of delete modal -->
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <!-- end of row -->
+        </div>
+        <!-- /.col-lg-12 -->
+        <div class="row">
+            <nav aria-label="Product navigation">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous  %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                        </li>
+                    {% endif %}
+                    {% for page_num in page_obj.paginator.page_range %}
+                        <li class="page-item"><a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a></li>
+                    {% endfor %}
+                    {% if page_obj.has_next   %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+    <!-- /.row -->
+</div>
+{% endblock %}
+{% block javascript %}
+<script type="text/javascript" src="{% static 'js/product_list.js' %}"></script>
+{% endblock %}

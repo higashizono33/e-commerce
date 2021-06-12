@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}My eCommerce|Home View{% endblock %}
+{% block content %}
+<div class="container pb-3">
+    <div class="row d-flex justify-content-end">
+        <div class="pagination col-12 d-flex justify-content-end">
+            <span class="step-links">
+                {% if page_obj.has_previous %}
+                    <a href="?page=1">&laquo; first</a>
+                    <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+                {% endif %}
+                <span class="current">
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                </span>
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}">next</a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+                {% endif %}
+            </span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-3 card p-3">
+            <form action="{% url 'search' %}" method="GET">
+                {% csrf_token %}
+                <div class="row mb-2">
+                    <div class="col-10 pe-0">
+                        <input type="text" class="form-control" placeholder="search" name="keyword">
+                    </div>
+                    <div class="col-2">
+                        <button class="btn pt-1 px-0"><img src="{% static 'img/search-icon.png' %}" style="width: 30px; height: 30px;"></button>
+                    </div>
+                </div>
+            </form>
+            <div class="row">
+                <div class="col-8">
+                    <div class="list-group text-center">
+                        <strong class="list-group-item text-start border-0">Categories</strong>
+                        <div class="overflow-auto mb-2" style="height: 350px;">
+                        {% for category in categories %}
+                            <a href="/filter/{{category.id}}" class="list-group-item border-0">
+                                {{category.name}} ({{counts|get_item:category.name}})
+                            </a>
+                        {% endfor %}
+                        </div>
+                        <a href="{% url 'index' %}" class="list-group-item border-0 fw-bold">Show all</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /.col-lg-3 -->
+        <div class="col-lg-9">
+            <div class="row">
+                {% for product in page_obj %}
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="card h-100 p-2">
+                        <div class="text-center">
+                            {% if product.main_image %}
+                                <img class="card-img-top" src="/media/{{product.main_image}}" alt="product_image" style="width: 170px; height: 170px;">
+                            {% else %}
+                                <img class="card-img-top" src="http://placehold.it/170x170" alt="image" style="width: 170px; height: 170px;">
+                            {% endif %}
+                        </div>
+                        <div class="card-body mx-auto">
+                            <h4 class="card-title">
+                            <a href="{% url 'product_detail' product.id %}">{{product.name}}</a>
+                            </h4>
+                            <h5>${{product.price}}</h5>
+                            <p class="card-text">{{product.description}}</p>
+                        </div>
+                        <div class="card-footer">
+                            <small class="text-muted">&#9733; &#9733; &#9733; &#9733; &#9734;</small>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        <!-- /.col-lg-9 -->
+        </div>
+        <div class="row">
+            <nav aria-label="Product navigation">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous  %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                        </li>
+                    {% endif %}
+                    {% for page_num in page_obj.paginator.page_range %}
+                        <li class="page-item"><a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a></li>
+                    {% endfor %}
+                    {% if page_obj.has_next   %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,82 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}My eCommerce{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js" integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <style>
+        .asteriskField{
+            display: none;
+        }
+        #popUp{
+            display: none;
+            top: -30px;
+            left: -60px;
+        }
+        .item_count{
+            top: -20px;
+            left: 33px;
+        }
+    </style>
+</head>
+<body>
+    {% if user.is_superuser %}
+    <header class="p-3 bg-danger text-white mb-5">
+        <div class="container">
+            <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+                <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
+                    <svg class="bi me-2" width="0" height="32"><use xlink:href="#bootstrap"/></svg>
+                </a>
+                <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+                    <li><a href="{% url 'dashboard' %}" class="nav-link text-white fs-3">Admin Dashboard</a></li>
+                    <li><a href="{% url 'dashboard' %}" class="nav-link text-white fs-5 mt-2 pb-0" id="nav_order">Orders</a></li>
+                    <li><a href="{% url 'dashboard_products' %}" class="nav-link text-white fs-5 mt-2 pb-0" id="nav_product">Products</a></li>
+                </ul>
+                <div class="text-end">
+                    <a href="{% url 'logout' %}"><button type="button" class="btn btn-outline-light me-2">Logout</button></a>
+                </div>
+            </div>
+        </div>
+    </header>
+    {% else %}
+    <header class="p-3 bg-dark text-white mb-5">
+        <div class="container">
+            <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+                <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
+                    <svg class="bi me-2" width="0" height="32"><use xlink:href="#bootstrap"/></svg>
+                </a>
+                <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+                    <li><a href="{% url 'index' %}" class="nav-link text-white fs-3">My eCommerce</a></li>
+                </ul>
+                <div class="text-end">
+                    <a href="{% url 'show_cart' %}" class="text-white me-4 text-decoration-none position-relative"><img src="{% static 'img/shopping-cart-icon.png' %}" style="width: 45px; height: 40px;">
+                        <span id="popUp" class="text-white position-absolute">added to cart</span>
+                        {% if item_count %}
+                            <span class="badge badge-primary fs-6 item_count position-absolute">{{item_count}}</span>
+                        {% else %}
+                            <span class="badge badge-primary fs-6 item_count position-absolute">0</span>
+                        {% endif %}
+                    </a>
+                    {% if user.is_authenticated %}
+                        <span class="me-3">Welcome {{user.first_name}} !!</span>
+                        <a href="{% url 'logout' %}"><button type="button" class="btn btn-outline-light me-2">Logout</button></a>
+                    {% else %}
+                        <a href="{% url 'login' %}"><button type="button" class="btn btn-outline-light me-2">Login</button></a>
+                        <a href="{% url 'signup' %}"><button type="button" class="btn btn-warning">Sign-up</button></a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </header>
+    {% endif %}
+    {% block content %}
+    {% endblock %}
+    {% block javascript %}
+    {% endblock %}
+</body>
+</html>

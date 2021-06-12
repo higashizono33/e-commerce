@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}My eCommerce{% endblock %}
+{% block content %}
+<div class="container pb-3">
+    <div class="row">
+        <div class="col-3">
+            <form action="{% url 'order_search' %}" method="GET">
+                {% csrf_token %}
+                <div class="row mb-2">
+                    <div class="col-10 px-0">
+                        <input type="text" class="form-control" placeholder="search" name="keyword">
+                    </div>
+                    <div class="col-2">
+                        <button class="btn pt-1 px-0"><img src="{% static 'img/search-icon.png' %}" style="width: 30px; height: 30px;"></button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="col-lg-12">
+            <div class="row">
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">Order ID</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Date</th>
+                            <th scope="col">Billing Address</th>
+                            <th scope="col">Total</th>
+                            <th scope="col">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in page_obj %}
+                        <tr class="align-middle">
+                            <td class="fs-5 text-center"><a href="/orders/show/{{order.id}}">{{order.id}}</a></td>
+                            <td>{{order.cart.user.first_name}}</td>
+                            <td>{{order.created_at|date:"m/d/Y"}}</td>
+                            <td>
+                                {% for payment in payments %}
+                                    {% if payment.order.id == order.id %}
+                                        {{payment.billing_info.address}}
+                                        {{payment.billing_info.city}}
+                                        {{payment.billing_info.state}}
+                                        {{payment.billing_info.zipcode}}
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td>${{order.get_total}}</td>
+                            <td>
+                                <form action="{% url 'update_status' %}" method="GET">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="order_id" value="{{order.id}}">
+                                    <select name="status" id="" class="form-control status">
+                                        <option value="{{order.status}}">{{order.status}}</option>
+                                        {% for choice in choices %}
+                                            {% if choice.0 != order.status %}
+                                            <option value="{{choice.0}}">{{choice.0}}</option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!-- /.col-lg-9 -->
+        <div class="row">
+            <nav aria-label="Product navigation">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous  %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                        </li>
+                    {% endif %}
+                    {% for page_num in page_obj.paginator.page_range %}
+                        <li class="page-item"><a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a></li>
+                    {% endfor %}
+                    {% if page_obj.has_next   %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+    <!-- /.row -->
+</div>
+{% endblock %}
+{% block javascript %}
+<script type="text/javascript" src="{% static 'js/dashboard.js' %}"></script>
+{% endblock %}

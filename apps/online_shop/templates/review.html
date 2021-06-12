@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}My eCommerce|Product Reviews{% endblock %}
+{% block content %}
+<link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+<div class="container">
+    <a href="{% url 'product_detail' product.id %}">Go Back</a>
+    <h1 class="my-4">{{product.name}}</h1>
+    <div class="row">
+        <div class="col-md-6 text-center">
+            <img class="img-fluid main_image" src="/media/{{product.main_image}}" alt="main_image" style="width: 330px; height: 330px;">
+        </div>
+        {% if user.is_authenticated %}
+        <div class="col-md-6">
+            <form method="POST" novalidate>
+            {% csrf_token %}
+                <div class="row d-flex mb-2">
+                    <h3 class="col-4 pe-0">Your Review</h3>
+                    <div class="col-2 ps-0">
+                        <select name="star" class="form-control">
+                            <option value="1">1 star</option>
+                            <option value="2">2 stars</option>
+                            <option value="3" selected>3 stars</option>
+                            <option value="4">4 stars</option>
+                            <option value="5">5 stars</option>
+                        </select>
+                    </div>
+                </div>
+                {% if form.errors %}
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                            <div class="alert alert-danger">
+                                <span>{{ error|escape }}</strong>
+                            </div>
+                        {% endfor %}
+                    {% endfor %}
+                    {% for error in form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            <strong>{{ error|escape }}</strong>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                {{form.content}}
+                <div>
+                    <button class="btn btn-primary px-5 mt-3">Post</button>
+                </div>
+            </form>
+        </div>
+        {% endif %}
+    </div>
+</div>
+<div class="container my-5">
+<h2 class="">Review for {{product.name}}</h2>
+<div class="card">
+    <div class="card-body overflow-auto" style="height: 350px;">
+        {% for review in object_list reversed %}
+        <div class="row">
+            <div class="col-md-2 text-center">
+                <img src="https://image.ibb.co/jw55Ex/def_face.jpg" class="img img-rounded img-fluid" style="width: 100px; height: 100px;"/>
+                <p class="text-secondary">{{review.created_at}}</p>
+            </div>
+            <div class="col-md-10">
+                <p>
+                    <strong>{{review.user.first_name}} {{review.user.last_name}}</strong>
+                    {% if review.star == 1 %}
+                    <span class="float-right"><i class="text-warning fa fa-star"></i></span>
+                    {% elif review.star == 2 %}
+                    <span class="float-right"><i class="text-warning fa fa-star"></i></span>
+                    <span class="float-right"><i class="text-warning fa fa-star"></i></span>
+                    {% elif review.star == 3 %}
+                    <span class="float-right"><i class="text-warning fa fa-star"></i></span>
+                    <span class="float-right"><i class="text-warning fa fa-star"></i></span>
+                    <span class="float-right"><i class="text-warning fa fa-star"></i></span>
+                    {% elif review.star == 4 %}
+                    <span class="float-right"><i class="text-warning fa fa-star"></i></span>
+                    <span class="float-right"><i class="text-warning fa fa-star"></i></span>
+                    <span class="float-right"><i class="text-warning fa fa-star"></i></span>
+                    <span class="float-right"><i class="text-warning fa fa-star"></i></span>
+                    {% else %}
+                    <span class="float-right"><i class="text-warning fa fa-star"></i></span>
+                    <span class="float-right"><i class="text-warning fa fa-star"></i></span>
+                    <span class="float-right"><i class="text-warning fa fa-star"></i></span>
+                    <span class="float-right"><i class="text-warning fa fa-star"></i></span>
+                    <span class="float-right"><i class="text-warning fa fa-star"></i></span>
+                    {% endif %}
+                </p>
+                <div class="clearfix"></div>
+                <p>{{review.content}}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+</div>
+{% endblock %}

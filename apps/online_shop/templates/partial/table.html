@@ -1,0 +1,22 @@
+{% load static %}
+{% for item in items %}
+<tr class="align-middle table-content">
+    <td>{{item.product.name}}</td>
+    <td>${{item.product.price}}</td>
+    <td>
+        <div class="row">
+            <div class="col-6">
+                <form action="{% url 'update_item_inCart' %}" method="GET">
+                    {% csrf_token %}
+                    <input type="hidden" name="item_id" value="{{item.id}}">
+                    <input type="number" class="form-select order_qty" id="{{item.id}}" name="qty" min="1" max="5" value="{{item.qty}}">
+                </form>
+            </div>
+            <div class="col-6">
+                <a href="{% url 'delete_item_fromCart' item.id %}"><img src="{% static 'img/trash-bin-icon.png' %}" style="width: 30px; height: 30px;" class="trash-bin" itemId={{item.id}}></a>
+            </div>
+        </div>
+    </td>
+    <td id="id-{{item.id}}-cost">${{item.cost}}</td>
+</tr>
+{% endfor %}

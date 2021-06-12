@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% block title %}My eCommerce{% endblock %}
+{% block content %}
+<div class="container">
+    <a href="/dashboard">Go Back</a>
+    <h1 class="my-4">{{object.name}}</h1>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Order ID: {{object.id}}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">Customer shipping info:</h6>
+                    <div class="row">
+                        <label for="" class="col-4">Name:</label>
+                        <span class="col-8">{{payment.shipping_info.first_name}}</span>
+                    </div>
+                    <div class="row">
+                        <label for="" class="col-4">Address:</label>
+                        <span class="col-8">{{payment.shipping_info.address}}</span>
+                    </div>
+                    <div class="row">
+                        <label for="" class="col-4">City:</label>
+                        <span class="col-8">{{payment.shipping_info.city}}</span>
+                    </div>
+                    <div class="row">
+                        <label for="" class="col-4">State:</label>
+                        <span class="col-8">{{payment.shipping_info.state}}</span>
+                    </div>
+                    <div class="row">
+                        <label for="" class="col-4">Zip:</label>
+                        <span class="col-8">{{payment.shipping_info.zipcode}}</span>
+                    </div>
+                    <h6 class="card-subtitle mb-2 mt-3 text-muted">Customer billing info:</h6>
+                    <div class="row">
+                        <label for="" class="col-4">Name:</label>
+                        <span class="col-8">{{payment.billing_info.first_name}}</span>
+                    </div>
+                    <div class="row">
+                        <label for="" class="col-4">Address:</label>
+                        <span class="col-8">{{payment.billing_info.address}}</span>
+                    </div>
+                    <div class="row">
+                        <label for="" class="col-4">City:</label>
+                        <span class="col-8">{{payment.billing_info.city}}</span>
+                    </div>
+                    <div class="row">
+                        <label for="" class="col-4">State:</label>
+                        <span class="col-8">{{payment.billing_info.state}}</span>
+                    </div>
+                    <div class="row">
+                        <label for="" class="col-4">Zip:</label>
+                        <span class="col-8">{{payment.billing_info.zipcode}}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Item</th>
+                        <th scope="col">Price</th>
+                        <th scope="col">Quantity</th>
+                        <th scope="col">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in items %}
+                    <tr>
+                        <td>{{item.product.id}}</a></td>
+                        <td>{{item.product.name}}</td>
+                        <td>${{item.product.price}}</td>
+                        <td>{{item.qty}}</td>
+                        <td>${{item.cost}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div class="row mt-5">
+                <div class="col-4 text-center">
+                    {% if object.status == 'In Progress' %}
+                        <h6 class="bg-warning text-dark py-2 rounded">Status:<span class="ms-3">{{object.status}}</span></h6>
+                    {% elif object.status == 'Cancelled' %}
+                        <h6 class="bg-danger text-white py-2 rounded">Status:<span class="ms-3">{{object.status}}</span></h6>
+                    {% else %}
+                        <h6 class="bg-success text-white py-2 rounded">Status:<span class="ms-3">{{object.status}}</span></h6>
+                    {% endif %}
+                </div>
+                <div class="col-8 d-flex justify-content-end">
+                    <div class="card" style="width: 18rem;">
+                        <div class="card-body">
+                            <div class="row">
+                                <label for="" class="col-6">Sub total:</label>
+                                <span class="col-6">${{object.cart.total_cost}}</span>
+                            </div>
+                            <div class="row">
+                                <label for="" class="col-6">Shipping:</label>
+                                <span class="col-6">${{object.shipping_cost}}</span>
+                            </div>
+                            <div class="row">
+                                <label for="" class="col-6">Total Price:</label>
+                                <span class="col-6">${{object.get_total}}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

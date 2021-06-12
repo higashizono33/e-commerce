@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block title %}Shopping Cart|Check Out{% endblock %}
+{% block content %}
+<div class="container">
+    <table class="table table-bordered table-striped mt-5 mb-0">
+        <thead>
+            <tr>
+                <th scope="col">Item</th>
+                <th scope="col">Price</th>
+                <th scope="col">Quantity</th>
+                <th scope="col">Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+            <tr class="align-middle table-content">
+                <td>{{item.product.name}}</td>
+                <td>${{item.product.price}}</td>
+                <td>
+                    <div class="row">
+                        <div class="col-6">
+                            <form action="{% url 'update_item_inCart' %}" method="GET">
+                                {% csrf_token %}
+                                <input type="hidden" name="item_id" value="{{item.id}}">
+                                <input type="number" class="form-select order_qty" id="{{item.id}}" name="qty" min="1" max="5" value="{{item.qty}}">
+                            </form>
+                        </div>
+                        <div class="col-6">
+                            <a href="{% url 'delete_item_fromCart' item.id %}"><img src="{% static 'img/trash-bin-icon.png' %}" style="width: 30px; height: 30px;" class="trash-bin" itemId={{item.id}}></a>
+                        </div>
+                    </div>
+                </td>
+                <td id="id-{{item.id}}-cost">${{item.cost}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <p class="text-end">*less than $35 purchase, $3.99 is shipping charge per item</p>
+    <div class="d-flex justify-content-end">
+        <label for="sub-total" class="me-2">Sub Total:</label>
+        <span id="sub-total">${{cart.total_cost}}</span>
+    </div>
+    <div class="d-flex justify-content-end">
+        <label for="shipping-cost" class="me-2">Shipping Charge:</label>
+        <span id="shipping-cost">${{request.session.shipping_cost}}</span>
+    </div>
+    <div class="d-flex justify-content-end">
+        <label for="total" class="me-2">Total:</label>
+        <span id="total">${{total}}</span>
+    </div>
+    <div class="text-end mt-3">
+        <a href="{% url 'index' %}"><button class="btn btn-success">Continue Shopping</button></a>
+    </div>
+    <main>
+        <form action="{% url 'checkout' %}" method="POST" class="needs-validation" novalidate>
+            {% csrf_token %}
+            <div class="row g-5">
+                <div class="col-md-6 col-lg-6" id="shipping">
+                    <h4 class="mb-3 mt-5">Shipping address</h4>
+                    {{s_form|crispy}}
+                </div>
+                <div class="col-md-6 col-lg-6" id="billing">
+                    <div class="d-flex">
+                        <h4 class="mb-3 mt-5">Billing address</h4>
+                        <div class="form-check mt-5 ms-3">
+                            <input type="checkbox" class="form-check-input" id="same-address">
+                            <label class="form-check-label mb-3" for="same-address">same as my shipping address</label>
+                        </div>
+                    </div>
+                    {{b_form|crispy}}
+                    <div class="row my-3">
+                        <div class="col-2">
+                            <button class="w-100 btn btn-primary btn-lg" type="submit">Pay</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </main>
+</div>
+{% endblock %}
+{% block javascript %}
+<script type="text/javascript" src="{% static 'js/checkout.js' %}"></script>
+{% endblock %}

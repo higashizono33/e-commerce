@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}My eCommerce|Product Details{% endblock %}
+{% block content %}
+<div class="container">
+    <a href="/">Go Back</a>
+    <h1 class="my-4">{{object.name}}</h1>
+    <div class="row">
+        <div class="col-md-8 text-center">
+            <img class="img-fluid main_image" src="/media/{{object.main_image}}" alt="main_image" style="width: 330px; height: 330px;">
+        </div>
+        <div class="col-md-4">
+            <h3 class="my-3">Product Description</h3>
+            <ul>
+                <li>{{object.description}}</li>
+            </ul>
+            <div class="mb-4" id="gallary">
+                {% if images %}
+                    {% for image in images %}
+                    <img class="img-fluid product_image" src="/media/{{image.image}}" alt="product_image" style="width: 70px; height: 70px; border: 1px solid black;">
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <form method="POST">
+            {% csrf_token %}
+                <select name="qty">
+                    {% for i in price_qty %}
+                        <option value="{{i.qty}}">{{i.qty}} (${{i.price}})</option>
+                    {% endfor %}
+                </select>
+                {% if user.is_authenticated %}
+                <button class="btn btn-primary ms-3 buy-btn py-1 px-3" item_id="{{object.id}}">Buy</button>
+                {% endif %}
+            </form>
+            <div class="mt-3">
+                <a href="/cart">Watch Cart</a>
+            </div>
+            <div class="mt-3">
+                <a href="{% url 'show_review' object.id %}"><button class="btn btn-success px-5">Write Review</button></a>
+            </div>
+        </div>
+    </div>
+    <h3 class="my-4">Similar Products</h3>
+    <div class="row">
+        {% for product in similar_products %}
+            {% if product.id != object.id %}
+            <div class="col-md-3 col-sm-6 mb-4">
+                <span>{{product.name}}</span>
+                <span>${{product.price}}</span>
+                <div class="mt-3">
+                    <a href="{% url 'product_detail' product.id %}">
+                        <img class="img-fluid" src="/media/{{product.main_image}}" alt="similar_product_image" style="width: 220px; height: 220px;">
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+{% block javascript %}
+<script type="text/javascript" src="{% static 'js/detail.js' %}"></script>
+{% endblock %}
